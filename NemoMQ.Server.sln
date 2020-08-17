@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NemoMQ.Core", "NemoMQ.Core\NemoMQ.Core.csproj", "{56436C58-9FF1-41A1-996B-FE8BF1F4A3E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NemoMQ.Server", "NemoMQ.Server\NemoMQ.Server.csproj", "{30E0C760-A3C7-4CC5-A82F-C9F552FFEFCE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NemoMQ.Protocol", "NemoMQ.Protocol\NemoMQ.Protocol.csproj", "{49A24AFA-AE05-4601-94B0-CF26369BB311}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56436C58-9FF1-41A1-996B-FE8BF1F4A3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56436C58-9FF1-41A1-996B-FE8BF1F4A3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56436C58-9FF1-41A1-996B-FE8BF1F4A3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56436C58-9FF1-41A1-996B-FE8BF1F4A3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30E0C760-A3C7-4CC5-A82F-C9F552FFEFCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30E0C760-A3C7-4CC5-A82F-C9F552FFEFCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30E0C760-A3C7-4CC5-A82F-C9F552FFEFCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30E0C760-A3C7-4CC5-A82F-C9F552FFEFCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49A24AFA-AE05-4601-94B0-CF26369BB311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49A24AFA-AE05-4601-94B0-CF26369BB311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49A24AFA-AE05-4601-94B0-CF26369BB311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49A24AFA-AE05-4601-94B0-CF26369BB311}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94C6AEC4-FC41-44E7-B3A4-DC305464369D}
+	EndGlobalSection
+EndGlobal
