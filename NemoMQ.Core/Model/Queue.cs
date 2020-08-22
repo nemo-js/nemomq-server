@@ -35,15 +35,15 @@ namespace NemoMQ.Core.Model
             }
         }
 
-        internal bool Enqueue()
+        internal void Enqueue()
         {
             if (!_messages.Any())
             {
-                return true;
+                return;
             }
             
             //TODO: if message failes to be delivered it should not be dequeued
-            return SendMessage(_messages.Dequeue());
+            SendMessage(_messages.Dequeue());
         }
 
         internal bool SendMessage(string msg)
