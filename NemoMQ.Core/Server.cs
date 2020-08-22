@@ -29,14 +29,13 @@ namespace NemoMQ.Core
 
         private void Start()
         {
-            Task mainThread = new Task(() =>
+            /*Task mainThread = new Task(() =>
             {
                 while (true)
                 {
                     _queueManager.Tick();
-                    Thread.Sleep(300);
                 }
-            });
+            });*/
 
             Task serverThread = new Task(() =>
             {
@@ -45,8 +44,7 @@ namespace NemoMQ.Core
                     while (true)
                     {
                         TcpClient client = server.AcceptTcpClient();
-                        var clientThread = new Thread(new ParameterizedThreadStart(ClientConnected));
-                        clientThread.Start(client);
+                        ClientConnected(client);
                     }
                 }
                 catch (SocketException e)
@@ -56,15 +54,14 @@ namespace NemoMQ.Core
                 }
             });
 
-            mainThread.Start();
+            //mainThread.Start();
             serverThread.Start();
 
             serverThread.Wait();
         }
 
-        public void ClientConnected(object obj)
+        public async void ClientConnected(TcpClient tcpClient)
         {
-            TcpClient tcpClient = (TcpClient)obj;
             var stream = tcpClient.GetStream();
             var bytes = new byte[256];
             int i;
@@ -78,7 +75,7 @@ namespace NemoMQ.Core
             var converter = new MessageConverter();
             try
             {
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                while ((i = await stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
                 {
                     var messages = converter.OnNewData(bytes, i);
                     foreach (var msg in messages)
