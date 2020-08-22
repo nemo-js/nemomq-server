@@ -16,30 +16,48 @@ namespace NemoMQ.Core.Model
 
         internal void Publish(Client client, string message)
         {
+            if (_subscribers.Any())
+            {
+                if (SendMessage(message))
+                {
+                    return;
+                }
+            }
             _messages.Enqueue(message);
         }
 
         internal void AddSubscriber(Client client)
         {
             _subscribers.Add(client);
+            if (_messages.Any())
+            {
+                Enqueue();
+            }
         }
 
-        internal void Enqueue()
+        internal bool Enqueue()
         {
             if (!_messages.Any())
             {
-                return;
+                return true;
             }
+            
+            //TODO: if message failes to be delivered it should not be dequeued
+            return SendMessage(_messages.Dequeue());
+        }
 
+        internal bool SendMessage(string msg)
+        {
             if (!_subscribers.Any())
             {
-                return;
+                return false;
             }
 
             var sub = _subscribers.First();
-            var msg = _messages.Dequeue();
 
             sub.Send(msg);
+
+            return true;
         }
     }
 }
