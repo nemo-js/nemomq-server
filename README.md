@@ -30,4 +30,4 @@ The communication between the Broker and its clients is handled through TCP conn
 
 * Performance is evaluated as messages per second the broker can serve
 * Replacing thread per client with async/await pattern gave a 110% performance boost
-* Replacing JSON de/serialization with byte manupulation gave another 200% performance boost
+* Replacing JSON de/serialization with byte manipulation gave another 200% performance boost

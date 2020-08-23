@@ -12,13 +12,11 @@ namespace NemoMQ.Core
     public class Server
     {
         private readonly QueueManager _queueManager;
-        private readonly MessageParser _messageParser;
         private readonly TcpListener server;
 
         public Server(string ip, int port)
         {
             _queueManager = new QueueManager();
-            _messageParser = new MessageParser(_queueManager);
 
             IPAddress localAddr = IPAddress.Parse(ip);
             server = new TcpListener(localAddr, port);
@@ -80,7 +78,7 @@ namespace NemoMQ.Core
                     var messages = converter.DeserializeMessages(bytes, i);
                     foreach (var msg in messages)
                     {
-                        _messageParser.ParseMessage(client, msg);
+                        ParseMessage(client, msg);
                     }
                 }
             }
@@ -88,6 +86,22 @@ namespace NemoMQ.Core
             catch (Exception e)
             {
                 Console.WriteLine("Exception: {0}", e.ToString());
+            }
+        }
+
+        private void ParseMessage(Client client, Message msg)
+        {
+            switch (msg.Header.Type)
+            {
+                case MessageType.Publish:
+                    _queueManager.PublishMessage(client, msg.Header.Queue, msg.Payload);
+                    break;
+                case MessageType.Subscribe:
+                    _queueManager.AddSubscriber(client, msg.Header.Queue);
+                    break;
+                case MessageType.AddQueue:
+                    _queueManager.AddQueue(msg.Header.Queue);
+                    break;
             }
         }
     }
