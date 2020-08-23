@@ -14,12 +14,12 @@ namespace NemoMQ.Core.Model
             { 
                 Header = new MessageHeader
                 {
-                    
+                    Type = MessageType.SendData  
                 },
                 Payload = body
             };
 
-            var data = MessageConverter.SerializeMessage(message);
+            var data = ByteSerializer.SerializeMessage(message);
 
             NetworkStream stream = TcpClient.GetStream();
             stream.Write(data, 0, data.Length);

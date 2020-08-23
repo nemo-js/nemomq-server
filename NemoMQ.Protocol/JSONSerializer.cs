@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace NemoMQ.Protocol
 {
-    public class MessageConverter
+    public class JSONSerializer : IMessageSerializer
     {
         private static readonly string MESSAGE_END = "--END--";
         private string _unparsedData = "";
@@ -15,7 +16,7 @@ namespace NemoMQ.Protocol
             return Encoding.ASCII.GetBytes(serialized);
         }
 
-        public List<Message> OnNewData(byte[] bytes, int count)
+        public List<Message> DeserializeMessages(byte[] bytes, int count)
         {
             var messages = new List<Message>();
 

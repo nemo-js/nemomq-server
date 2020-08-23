@@ -18,8 +18,9 @@ namespace NemoMQ.Protocol
 
     public enum MessageType
     {
-        Publish,
-        Subscribe,
-        AddQueue
+        Publish = 128,
+        Subscribe = 129,
+        AddQueue = 130,
+        SendData = 131
     }
 }

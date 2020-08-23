@@ -72,12 +72,12 @@ namespace NemoMQ.Core
                 TcpClient = tcpClient
             };
 
-            var converter = new MessageConverter();
+            var converter = new ByteSerializer();
             try
             {
                 while ((i = await stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
                 {
-                    var messages = converter.OnNewData(bytes, i);
+                    var messages = converter.DeserializeMessages(bytes, i);
                     foreach (var msg in messages)
                     {
                         _messageParser.ParseMessage(client, msg);
