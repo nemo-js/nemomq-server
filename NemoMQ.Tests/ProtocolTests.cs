@@ -66,6 +66,50 @@ namespace NemoMQ.Tests
             Assert.AreEqual(msg.Payload, messages[0].Payload);
         }
 
+        [TestMethod]
+        public void CanSerilazeManyMessagesInOnBatch()
+        {
+            var conv1 = new ByteSerializer();
+
+            var msg1 = CreateSampleMessage();
+            msg1.Payload = "Message NO: 1";
+            var msg2 = CreateSampleMessage();
+            msg2.Payload = "Message NO: 2";
+
+            var data1 = ByteSerializer.SerializeMessage(msg1);
+            var data2 = ByteSerializer.SerializeMessage(msg2);
+
+            var bigData = new byte[data1.Length + data2.Length];
+            System.Buffer.BlockCopy(data1, 0, bigData, 0, data1.Length);
+            System.Buffer.BlockCopy(data2, 0, bigData, data1.Length, data2.Length);
+
+            var messages = conv1.DeserializeMessages(bigData, bigData.Length);
+
+            Assert.AreEqual(2, messages.Count);
+            Assert.AreEqual(msg1.Payload, messages[0].Payload);
+            Assert.AreEqual(msg2.Payload, messages[1].Payload);
+        }
+
+        [TestMethod]
+        public void CanSerializeBigMessage()
+        {
+            var conv1 = new ByteSerializer();
+
+            var msg = CreateSampleMessage();
+            for (var i = 0; i < 10; i++)
+            {
+                msg.Payload += msg.Payload;
+            }
+
+            var data = ByteSerializer.SerializeMessage(msg);
+            var messages = conv1.DeserializeMessages(data, data.Length);
+
+            Assert.AreEqual(1, messages.Count);
+            Assert.AreEqual(msg.Header.Type, messages[0].Header.Type);
+            Assert.AreEqual(msg.Header.Queue, messages[0].Header.Queue);
+            Assert.AreEqual(msg.Payload, messages[0].Payload);
+        }
+
         private Message CreateSampleMessage()
         {
             return new Message
