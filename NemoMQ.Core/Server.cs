@@ -2,9 +2,9 @@
 using NemoMQ.Core.Model;
 using NemoMQ.Protocol;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace NemoMQ.Core
@@ -12,61 +12,48 @@ namespace NemoMQ.Core
     public class Server
     {
         private readonly QueueManager _queueManager;
-        private readonly TcpListener server;
+        private readonly string _ip;
+        private readonly int _port;
 
         public Server(string ip, int port)
         {
             _queueManager = new QueueManager();
-
-            IPAddress localAddr = IPAddress.Parse(ip);
-            server = new TcpListener(localAddr, port);
-            server.Start();
-
-            Start();
+            _ip = ip;
+            _port = port;
         }
 
-        private void Start()
+        public async Task Start()
         {
-            /*Task mainThread = new Task(() =>
+            IPAddress localAddr = IPAddress.Parse(_ip);
+            var server = new TcpListener(localAddr, _port);
+            server.Start();
+
+            try
             {
                 while (true)
                 {
-                    _queueManager.Tick();
+                    TcpClient client = await server.AcceptTcpClientAsync();
+                    ClientConnected(client);
                 }
-            });*/
-
-            Task serverThread = new Task(() =>
+            }
+            catch (SocketException e)
             {
-                try
-                {
-                    while (true)
-                    {
-                        TcpClient client = server.AcceptTcpClient();
-                        ClientConnected(client);
-                    }
-                }
-                catch (SocketException e)
-                {
-                    Console.WriteLine("SocketException: {0}", e);
-                    server.Stop();
-                }
-            });
-
-            //mainThread.Start();
-            serverThread.Start();
-
-            serverThread.Wait();
+                Console.WriteLine("SocketException: {0}", e);
+                server.Stop();
+            }
         }
 
         public async void ClientConnected(TcpClient tcpClient)
         {
             var stream = tcpClient.GetStream();
-            var bytes = new byte[256];
+            var bytes = new byte[512];
             int i;
+
+            var endPoint = ((IPEndPoint)tcpClient.Client.RemoteEndPoint);
 
             var client = new Client
             {
-                Id = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString(),
+                Id = endPoint.Address.ToString() + ":" + endPoint.Port,
                 TcpClient = tcpClient
             };
 
@@ -82,7 +69,10 @@ namespace NemoMQ.Core
                     }
                 }
             }
-            //TODO: handle client disconnect
+            catch (IOException)
+            {
+                _queueManager.ClientDisconnected(client);
+            }
             catch (Exception e)
             {
                 Console.WriteLine("Exception: {0}", e.ToString());

@@ -48,16 +48,32 @@ namespace NemoMQ.Core.Model
 
         internal bool SendMessage(string msg)
         {
-            if (!_subscribers.Any())
+            while (_subscribers.Any())
             {
-                return false;
+                var sub = GetNextClient();
+
+                if (!sub.TcpClient.Connected)
+                {
+                    ClientDisconnected(sub);
+                    continue;
+                }
+
+                sub.Send(msg);
+
+                return true;
             }
 
-            var sub = _subscribers.First();
+            return false; 
+        }
 
-            sub.Send(msg);
+        internal void ClientDisconnected(Client client)
+        {
+            _subscribers.Remove(client);
+        }
 
-            return true;
+        private Client GetNextClient()
+        {
+            return _subscribers.First();
         }
     }
 }

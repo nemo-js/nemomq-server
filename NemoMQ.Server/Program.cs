@@ -4,7 +4,9 @@
     {
         static void Main(string[] args)
         {
-            new Core.Server("127.0.0.1", 62000);
+            var server = new Core.Server("127.0.0.1", 62000);
+
+            server.Start().Wait();
         }
     }
 }

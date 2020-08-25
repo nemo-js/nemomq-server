@@ -1,4 +1,5 @@
 ﻿using NemoMQ.Core.Model;
+using System;
 using System.Collections.Concurrent;
 
 namespace NemoMQ.Core.Engine
@@ -30,6 +31,14 @@ namespace NemoMQ.Core.Engine
             }
 
             queue.AddSubscriber(client);
+        }
+
+        public void ClientDisconnected(Client client)
+        {
+            foreach (var queue in _queues)
+            {
+                queue.Value.ClientDisconnected(client);
+            }
         }
 
         public void AddQueue(string queueName)
