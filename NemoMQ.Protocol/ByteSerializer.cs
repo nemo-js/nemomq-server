@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace NemoMQ.Protocol
@@ -14,13 +15,19 @@ namespace NemoMQ.Protocol
             var queueame = Encoding.ASCII.GetBytes(message.Header.Queue ?? "");
             var payload = Encoding.ASCII.GetBytes(message.Payload ?? "");
 
-            var serialized = new byte[3 + queueame.Length + payload.Length];
+            ByteSerializableInt messageLength = payload.Length;
+
+            var serialized = new byte[2 + 4 + queueame.Length + payload.Length];
             serialized[0] = (byte)message.Header.Type;
             serialized[1] = (byte)queueame.Length;
             Buffer.BlockCopy(queueame, 0, serialized, 2, queueame.Length);
             var pos = 2 + queueame.Length;
-            serialized[pos] = (byte)payload.Length;
-            pos = pos + 1;
+
+            serialized[pos++] = messageLength.Byte0;
+            serialized[pos++] = messageLength.Byte1;
+            serialized[pos++] = messageLength.Byte2;
+            serialized[pos++] = messageLength.Byte3;
+
             Buffer.BlockCopy(payload, 0, serialized, pos, payload.Length);
 
             return serialized;
@@ -56,7 +63,7 @@ namespace NemoMQ.Protocol
 
         private Message ParseMessage()
         {
-            if (_unparsedBufferLength < 2)
+            if (_unparsedBufferLength < 6)
             {
                 return null;
             }
@@ -82,8 +89,20 @@ namespace NemoMQ.Protocol
             };
 
             var pos = 2 + queueNameLength;
-            var payloadLength = (int)_unparsedBuffer[pos];
-            pos++;
+            if (_unparsedBufferLength < pos + 4)
+            {
+                return null;
+            }
+
+            var messageLength = new ByteSerializableInt
+            {
+                Byte0 = _unparsedBuffer[pos++],
+                Byte1 = _unparsedBuffer[pos++],
+                Byte2 = _unparsedBuffer[pos++],
+                Byte3 = _unparsedBuffer[pos++],
+            };
+            var payloadLength = messageLength.Int32;
+
             if (_unparsedBufferLength < payloadLength + pos)
             {
                 return null;
@@ -107,6 +126,31 @@ namespace NemoMQ.Protocol
             }
 
             return msg;
+        }
+    }
+
+    //Borrowed this technique from TomTom's answer here: https://stackoverflow.com/questions/8827649/fastest-way-to-convert-int-to-4-bytes-in-c-sharp
+    [StructLayout(LayoutKind.Explicit)]
+    struct ByteSerializableInt
+    {
+        [FieldOffset(0)]
+        public byte Byte0;
+        [FieldOffset(1)]
+        public byte Byte1;
+        [FieldOffset(2)]
+        public byte Byte2;
+        [FieldOffset(3)]
+        public byte Byte3;
+
+        [FieldOffset(0)]
+        public int Int32;
+
+        public static implicit operator ByteSerializableInt(int value)
+        {
+            return new ByteSerializableInt
+            {
+                Int32 = value
+            };
         }
     }
 }

@@ -67,7 +67,7 @@ namespace NemoMQ.Tests
         }
 
         [TestMethod]
-        public void CanSerilazeManyMessagesInOnBatch()
+        public void CanSerilazeManyMessagesInOneBatch()
         {
             var conv1 = new ByteSerializer();
 
