@@ -12,13 +12,13 @@ namespace NemoMQ.Protocol
 
         public static byte[] SerializeMessage(Message message)
         {         
-            var queueame = Encoding.ASCII.GetBytes(message.Header.Queue ?? "");
+            var queueame = Encoding.ASCII.GetBytes(message.Queue ?? "");
             var payload = Encoding.ASCII.GetBytes(message.Payload ?? "");
 
             ByteSerializableInt messageLength = payload.Length;
 
             var serialized = new byte[2 + 4 + queueame.Length + payload.Length];
-            serialized[0] = (byte)message.Header.Type;
+            serialized[0] = (byte)message.Type;
             serialized[1] = (byte)queueame.Length;
             Buffer.BlockCopy(queueame, 0, serialized, 2, queueame.Length);
             var pos = 2 + queueame.Length;
@@ -81,11 +81,8 @@ namespace NemoMQ.Protocol
 
             Message msg = new Message
             {
-                Header = new MessageHeader
-                {
-                    Type = (MessageType)_unparsedBuffer[0],
-                    Queue = Encoding.ASCII.GetString(_unparsedBuffer, 2, queueNameLength)
-                }
+                Type = (MessageType)_unparsedBuffer[0],
+                Queue = Encoding.ASCII.GetString(_unparsedBuffer, 2, queueNameLength)
             };
 
             var pos = 2 + queueNameLength;

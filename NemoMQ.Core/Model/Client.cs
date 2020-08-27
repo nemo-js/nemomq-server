@@ -11,11 +11,8 @@ namespace NemoMQ.Core.Model
         internal void Send(string body)
         {
             var message = new Message
-            { 
-                Header = new MessageHeader
-                {
-                    Type = MessageType.SendData  
-                },
+            {
+                Type = MessageType.SendData,
                 Payload = body
             };
 

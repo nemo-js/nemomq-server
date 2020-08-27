@@ -81,16 +81,16 @@ namespace NemoMQ.Core
 
         private void ParseMessage(Client client, Message msg)
         {
-            switch (msg.Header.Type)
+            switch (msg.Type)
             {
                 case MessageType.Publish:
-                    _queueManager.PublishMessage(client, msg.Header.Queue, msg.Payload);
+                    _queueManager.PublishMessage(client, msg.Queue, msg.Payload);
                     break;
                 case MessageType.Subscribe:
-                    _queueManager.AddSubscriber(client, msg.Header.Queue);
+                    _queueManager.AddSubscriber(client, msg.Queue);
                     break;
                 case MessageType.AddQueue:
-                    _queueManager.AddQueue(msg.Header.Queue);
+                    _queueManager.AddQueue(msg.Queue);
                     break;
             }
         }

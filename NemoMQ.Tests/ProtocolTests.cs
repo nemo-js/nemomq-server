@@ -17,8 +17,8 @@ namespace NemoMQ.Tests
             var messages = conv1.DeserializeMessages(data, data.Length);
 
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual(msg.Header.Type, messages[0].Header.Type);
-            Assert.AreEqual(msg.Header.Queue, messages[0].Header.Queue);
+            Assert.AreEqual(msg.Type, messages[0].Type);
+            Assert.AreEqual(msg.Queue, messages[0].Queue);
             Assert.AreEqual(msg.Payload, messages[0].Payload);
         }
 
@@ -42,8 +42,8 @@ namespace NemoMQ.Tests
 
             var messages = conv1.DeserializeMessages(part2, part2.Length);
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual(msg.Header.Type, messages[0].Header.Type);
-            Assert.AreEqual(msg.Header.Queue, messages[0].Header.Queue);
+            Assert.AreEqual(msg.Type, messages[0].Type);
+            Assert.AreEqual(msg.Queue, messages[0].Queue);
             Assert.AreEqual(msg.Payload, messages[0].Payload);
         }
 
@@ -61,8 +61,8 @@ namespace NemoMQ.Tests
             var messages = conv1.DeserializeMessages(finalData, finalData.Length);
 
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual(msg.Header.Type, messages[0].Header.Type);
-            Assert.AreEqual(msg.Header.Queue, messages[0].Header.Queue);
+            Assert.AreEqual(msg.Type, messages[0].Type);
+            Assert.AreEqual(msg.Queue, messages[0].Queue);
             Assert.AreEqual(msg.Payload, messages[0].Payload);
         }
 
@@ -105,8 +105,8 @@ namespace NemoMQ.Tests
             var messages = conv1.DeserializeMessages(data, data.Length);
 
             Assert.AreEqual(1, messages.Count);
-            Assert.AreEqual(msg.Header.Type, messages[0].Header.Type);
-            Assert.AreEqual(msg.Header.Queue, messages[0].Header.Queue);
+            Assert.AreEqual(msg.Type, messages[0].Type);
+            Assert.AreEqual(msg.Queue, messages[0].Queue);
             Assert.AreEqual(msg.Payload, messages[0].Payload);
         }
 
@@ -114,11 +114,8 @@ namespace NemoMQ.Tests
         {
             return new Message
             {
-                Header = new MessageHeader
-                {
-                    Type = MessageType.Publish,
-                    Queue = "YOLO_QUEUE"
-                },
+                Type = MessageType.Publish,
+                Queue = "YOLO_QUEUE",
                 Payload = "test test test"
             };
         }
