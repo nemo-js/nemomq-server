@@ -17,6 +17,7 @@ namespace NemoMQ.Core
 
         public Server(string ip, int port)
         {
+            Helper.Init();
             _queueManager = new QueueManager();
             _ip = ip;
             _port = port;
@@ -90,7 +91,9 @@ namespace NemoMQ.Core
                     _queueManager.AddSubscriber(client, msg.Queue);
                     break;
                 case MessageType.AddQueue:
-                    _queueManager.AddQueue(msg.Queue);
+                    //TODO: get queue settings
+                    var settings = new QueueSettings { IsDurable = true };
+                    _queueManager.AddQueue(msg.Queue, settings);
                     break;
             }
         }

@@ -1,16 +1,22 @@
 ﻿using NemoMQ.Core.Model;
-using System;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace NemoMQ.Core.Engine
 {
     class QueueManager
     {
         private ConcurrentDictionary<string, Queue> _queues { get; set; }
+        private readonly string _persistenceFilePath;
 
         public QueueManager()
         {
             _queues = new ConcurrentDictionary<string, Queue>();
+            _persistenceFilePath = Path.Combine(Helper.GetDataPath(), "queues.json");
+            Load();
         }
 
         public void PublishMessage(Client client, string queueName, string message)
@@ -41,14 +47,20 @@ namespace NemoMQ.Core.Engine
             }
         }
 
-        public void AddQueue(string queueName)
+        public void AddQueue(string queueName, QueueSettings settings)
         {
             if (_queues.ContainsKey(queueName))
             {
                 return;
             }
 
-            _queues.TryAdd(queueName, new Queue());
+            if (_queues.TryAdd(queueName, new Queue(queueName, settings)))
+            {
+                if (settings.IsDurable)
+                {
+                    Save();
+                }
+            }
         }
 
         public void Tick()
@@ -57,6 +69,42 @@ namespace NemoMQ.Core.Engine
             {
                 queue.Enqueue();
             }
+        }
+
+        private void Load()
+        {
+            if (!File.Exists(_persistenceFilePath))
+            {
+                return;
+            }
+
+            var queues = JsonConvert.DeserializeObject<List<QueueDTO>>(File.ReadAllText(_persistenceFilePath));
+
+            foreach (var dto in queues)
+            {
+                var queue = new Queue(dto.Name, new QueueSettings {
+                    IsDurable = true
+                })
+                {
+                    DateCreated = dto.DateCreated
+                };
+
+                _queues.TryAdd(queue.Name, queue);
+            }
+        }
+
+        private void Save()
+        {
+            var durableQueues = _queues.Values
+                .Where(q => q.Settings.IsDurable)
+                .Select(q => new QueueDTO
+                {
+                    Name = q.Name,
+                    DateCreated = q.DateCreated
+                })
+                .ToList();
+            
+            File.WriteAllText(_persistenceFilePath, JsonConvert.SerializeObject(durableQueues));
         }
     }
 }

@@ -23,7 +23,7 @@ The communication between the Broker and its clients is handled through TCP conn
 * [✔] Use async/await and check performance gains 
 * [✔] Make the broker more stable (handle errors and client disconnects)
 * [✔] Remove the 255 bytes max message size
-* Add some more Broker features, like persistent messages, routing algorithms etc
+* Add some more Broker features, like persistent messages, durable queues, routing algorithms etc
 * Creare a rest API exposing Broker status (queues, clients, messages etc)
 
 ## Performance Conclusions

@@ -1,17 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NemoMQ.Core.Model
 {
     class Queue
     {
+        public string Name { get; set; }
+        public DateTime DateCreated { get; set; }
+        public QueueSettings Settings { get; set; }
+
         private List<Client> _subscribers { get; set; }
         private Queue<string> _messages { get; set; }
 
-        public Queue()
+        public Queue(string name)
         {
+            Name = name;
+            DateCreated = DateTime.UtcNow;
             _subscribers = new List<Client>();
             _messages = new Queue<string>();
+            Settings = new QueueSettings();
+        }
+
+        public Queue(string name, QueueSettings settings) : this(name)
+        {
+            Settings = settings;
         }
 
         internal void Publish(Client client, string message)

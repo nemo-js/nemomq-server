@@ -47,7 +47,7 @@ namespace NemoMQ.Protocol
                 _unparsedBuffer = newBuffer;
             }
 
-            _unparsedBufferLength = _unparsedBufferLength + count;
+            _unparsedBufferLength += count;
 
             var messages = new List<Message>();
 
@@ -79,12 +79,6 @@ namespace NemoMQ.Protocol
                 return null;
             }
 
-            Message msg = new Message
-            {
-                Type = (MessageType)_unparsedBuffer[0],
-                Queue = Encoding.ASCII.GetString(_unparsedBuffer, 2, queueNameLength)
-            };
-
             var pos = 2 + queueNameLength;
             if (_unparsedBufferLength < pos + 4)
             {
@@ -105,7 +99,13 @@ namespace NemoMQ.Protocol
                 return null;
             }
 
-            msg.Payload = Encoding.ASCII.GetString(_unparsedBuffer, pos, payloadLength);
+            Message msg = new Message
+            {
+                Type = (MessageType)_unparsedBuffer[0],
+                Queue = Encoding.ASCII.GetString(_unparsedBuffer, 2, queueNameLength),
+                Payload = Encoding.ASCII.GetString(_unparsedBuffer, pos, payloadLength)
+            };
+
             pos += payloadLength;
 
             var remaing = _unparsedBufferLength - pos;
